@@ -12,5 +12,5 @@ project (IMU-Data-Ingestion)
 find_package ( OpenCV REQUIRED )                              
 include_directories ( ${OpenCV_INCLUDE_DIRS} )
 
-add_executable (program1 main.cpp)
+add_executable (program1 fileReader.cpp)
 target_link_libraries (program1 ${OpenCV_LIBS})
