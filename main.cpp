@@ -101,7 +101,14 @@ int main()
     // If the input is the web camera, pass 0 instead of the video file name
     // VideoCapture cap("../../20220127_IMU_data/Alagut_3cam_4FPS_GPS_IMU_preview.mp4");
 
-    // Check if camera opened successfully
+    // Default resolutions of the frame are obtained.The default resolutions are system dependent.
+    int frame_width = cap.get(cv::CAP_PROP_FRAME_WIDTH);
+    int frame_height = cap.get(cv::CAP_PROP_FRAME_HEIGHT);
+    
+    // Define the codec and create VideoWriter object.The output is stored in 'outcpp.avi' file.
+    VideoWriter video("outcpp.avi", VideoWriter::fourcc('M', 'J', 'P', 'G'), 10, Size(frame_width, frame_height));
+
+    // Check if stream opened successfully
     if(!cap.isOpened())
     {
         cout << "Error opening video stream or file" << endl;
@@ -120,16 +127,37 @@ int main()
             break;
 
         putText(frame, 
-            "Speed: " + to_string(speed[i]),
-            cv::Point(15,15), // Coordinates (Bottom-left corner of the text string in the image)
-            cv::FONT_HERSHEY_COMPLEX_SMALL, // Font
+            "Speed: " + to_string(speed[i]) + " km/h",
+            Point(15, 15), // Coordinates (Bottom-left corner of the text string in the image)
+            FONT_HERSHEY_COMPLEX_SMALL, // Font
             1.0, // Scale. 2.0 = 2x bigger
-            cv::Scalar(255,255,255), // BGR Color
+            Scalar(255, 255, 255), // BGR Color
             1, // Line Thickness (Optional)
-            cv:: LINE_AA); // Anti-alias (Optional, see version note)
+            LINE_AA); // Anti-alias (Optional, see version note)
+
+        putText(frame, 
+            "Altitude: " + to_string(altitude[i]) + " meters",
+            Point(15, 35), // Coordinates (Bottom-left corner of the text string in the image)
+            FONT_HERSHEY_COMPLEX_SMALL, // Font
+            1.0, // Scale. 2.0 = 2x bigger
+            Scalar(255, 255, 255), // BGR Color
+            1, // Line Thickness (Optional)
+            LINE_AA); // Anti-alias (Optional, see version note)
+
+        putText(frame, 
+            "GPS: " + gps[i],
+            Point(15, 55), // Coordinates (Bottom-left corner of the text string in the image)
+            FONT_HERSHEY_COMPLEX_SMALL, // Font
+            1.0, // Scale. 2.0 = 2x bigger
+            Scalar(255, 255, 255), // BGR Color
+            1, // Line Thickness (Optional)
+            LINE_AA); // Anti-alias (Optional, see version note)
 
         // Display the resulting frame
         imshow( "Frame", frame );
+            
+        // Write the frame into the file 'outcpp.avi'
+        video.write(frame);
 
         // Press  ESC on keyboard to exit
         char c = (char)waitKey(25);
@@ -139,8 +167,9 @@ int main()
         i++;
     }
 
-    // When everything done, release the video capture object
+    // When everything done, release the video capture object and video writer object
     cap.release();
+    video.release();
 
     // Closes all the frames
     destroyAllWindows();
