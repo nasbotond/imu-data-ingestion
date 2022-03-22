@@ -1,7 +1,14 @@
+#ifdef _WIN32
+#include <Windows.h>
+#else
+#include <unistd.h>
+#endif
+
 #include "opencv2/opencv.hpp"
 #include <opencv2/imgproc.hpp>
 #include <iostream>
 #include <fstream>
+#include <cstdlib>
 
 using namespace std;
 using namespace cv;
@@ -51,71 +58,72 @@ int main()
     vector<float> accZ; // -999.99 for invalid
     vector<float> altitude; // m ... -999.99 for invalid
     vector<float> speed; // km/h ... -999.99 for invalid
+    vector<float> acc_magnitude;
 
-    for(int i = 1; i <= numFrames; i++) // this should be 1 -> numFrames
-    {
-        string path = "../../20220127_IMU_data/alagut_pol/test_fn" + to_string(i) + ".pol";
-        // Read from the text file
-        ifstream File(path);
+    // for(int i = 1; i <= numFrames; i++) // this should be 1 -> numFrames
+    // {
+    //     string path = "../../20220127_IMU_data/alagut_pol/test_fn" + to_string(i) + ".pol";
+    //     // Read from the text file
+    //     ifstream File(path);
 
-        for (int lineno = 0; getline (File,line) && lineno < 7; lineno++)
-        {
-            if (lineno == 0) // gps
-            {
-                gps.push_back(line);
-            }
-            if (lineno == 1)
-            {
-                string spd = get_str_between_two_str(line, " ", "k");
-                try
-                {
-                    replace(spd.begin(), spd.end(), ',', '.');
-                    speed.push_back(stof(spd));
-                }
-                catch(const std::exception& e)
-                {
-                    std::cerr << e.what() << '\n';
-                    std::cerr << to_string(i) << '\n';
-                }
+    //     for (int lineno = 0; getline (File,line) && lineno < 7; lineno++)
+    //     {
+    //         if (lineno == 0) // gps
+    //         {
+    //             gps.push_back(line);
+    //         }
+    //         if (lineno == 1)
+    //         {
+    //             string spd = get_str_between_two_str(line, " ", "k");
+    //             try
+    //             {
+    //                 replace(spd.begin(), spd.end(), ',', '.');
+    //                 speed.push_back(stof(spd));
+    //             }
+    //             catch(const std::exception& e)
+    //             {
+    //                 std::cerr << e.what() << '\n';
+    //                 std::cerr << to_string(i) << '\n';
+    //             }
                 
-            }
-            if (lineno == 2)
-            {
-                string alt = get_str_between_two_str(line, " ", "m");
-                try
-                {
-                    replace(alt.begin(), alt.end(), ',', '.');
-                    altitude.push_back(stof(alt));
-                }
-                catch(const std::exception& e)
-                {
-                    std::cerr << e.what() << '\n';
-                    std::cerr << to_string(i) << '\n';
-                }  
-            }
-            if (lineno == 5)
-            {
-                vector<string> result = parse_comma_separated_string(line);
-                try
-                {
-                    accX.push_back(stof(result[0]));
-                    accY.push_back(stof(result[1]));
-                    accZ.push_back(stof(result[2]));
-                }
-                catch(const std::exception& e)
-                {
-                    std::cerr << e.what() << '\n';
-                    std::cerr << to_string(i) << '\n';
-                }
+    //         }
+    //         if (lineno == 2)
+    //         {
+    //             string alt = get_str_between_two_str(line, " ", "m");
+    //             try
+    //             {
+    //                 replace(alt.begin(), alt.end(), ',', '.');
+    //                 altitude.push_back(stof(alt));
+    //             }
+    //             catch(const std::exception& e)
+    //             {
+    //                 std::cerr << e.what() << '\n';
+    //                 std::cerr << to_string(i) << '\n';
+    //             }  
+    //         }
+    //         if (lineno == 5)
+    //         {
+    //             vector<string> result = parse_comma_separated_string(line);
+    //             try
+    //             {
+    //                 accX.push_back(stof(result[0]));
+    //                 accY.push_back(stof(result[1]));
+    //                 accZ.push_back(stof(result[2]));
+    //             }
+    //             catch(const std::exception& e)
+    //             {
+    //                 std::cerr << e.what() << '\n';
+    //                 std::cerr << to_string(i) << '\n';
+    //             }
                 
-            } 
-        }
+    //         } 
+    //     }
 
         
 
-        // Close the file
-        File.close();
-    }
+    //     // Close the file
+    //     File.close();
+    // }
 
     // print all elements
     // cout << "vector elements are: ";
@@ -154,62 +162,201 @@ int main()
         if(frame.empty())
             break;
 
-        putText(frame, 
-            "Speed: " + to_string(speed[i]) + " km/h",
-            Point(15, 15), // Coordinates (Bottom-left corner of the text string in the image)
-            FONT_HERSHEY_COMPLEX_SMALL, // Font
-            1.0, // Scale. 2.0 = 2x bigger
-            Scalar(255, 255, 255), // BGR Color
-            1, // Line Thickness (Optional)
-            LINE_AA); // Anti-alias (Optional, see version note)
+        
+        string path = "../../20220127_IMU_data/alagut_pol/test_fn" + to_string(i) + ".pol";
+        // Read from the text file
+        ifstream File(path);
 
-        putText(frame, 
-            "Altitude: " + to_string(altitude[i]) + " meters",
-            Point(15, 35), // Coordinates (Bottom-left corner of the text string in the image)
-            FONT_HERSHEY_COMPLEX_SMALL, // Font
-            1.0, // Scale. 2.0 = 2x bigger
-            Scalar(255, 255, 255), // BGR Color
-            1, // Line Thickness (Optional)
-            LINE_AA); // Anti-alias (Optional, see version note)
+        for (int lineno = 0; getline (File,line) && lineno < 7; lineno++)
+        {
+            if (lineno == 0) // gps
+            {
+                gps.push_back(line);
 
-        putText(frame, 
-            gps[i],
-            Point(15, 55), // Coordinates (Bottom-left corner of the text string in the image)
-            FONT_HERSHEY_COMPLEX_SMALL, // Font
-            1.0, // Scale. 2.0 = 2x bigger
-            Scalar(255, 255, 255), // BGR Color
-            1, // Line Thickness (Optional)
-            LINE_AA); // Anti-alias (Optional, see version note)
+                putText(frame, 
+                    line,
+                    Point(15, 55), // Coordinates (Bottom-left corner of the text string in the image)
+                    FONT_HERSHEY_COMPLEX_SMALL, // Font
+                    1.0, // Scale. 2.0 = 2x bigger
+                    Scalar(255, 255, 255), // BGR Color
+                    1, // Line Thickness (Optional)
+                    LINE_AA); // Anti-alias (Optional, see version note)
+            }
+            if (lineno == 1)
+            {
+                string spd = get_str_between_two_str(line, " ", "k");
+                try
+                {
+                    replace(spd.begin(), spd.end(), ',', '.');
+                    speed.push_back(stof(spd));
 
-        putText(frame, 
-            to_string(accY[i]),
-            Point(15, 105), // Coordinates (Bottom-left corner of the text string in the image)
-            FONT_HERSHEY_COMPLEX_SMALL, // Font
-            1.0, // Scale. 2.0 = 2x bigger
-            Scalar(255, 255, 255), // BGR Color
-            1, // Line Thickness (Optional)
-            LINE_AA); // Anti-alias (Optional, see version note)
+                    putText(frame, 
+                        "Speed: " + spd + " km/h",
+                        Point(15, 15), // Coordinates (Bottom-left corner of the text string in the image)
+                        FONT_HERSHEY_COMPLEX_SMALL, // Font
+                        1.0, // Scale. 2.0 = 2x bigger
+                        Scalar(255, 255, 255), // BGR Color
+                        1, // Line Thickness (Optional)
+                        LINE_AA); // Anti-alias (Optional, see version note)
+                }
+                catch(const std::exception& e)
+                {
+                    std::cerr << e.what() << '\n';
+                    std::cerr << to_string(i) << '\n';
 
-        putText(frame, 
-            to_string(accX[i]),
-            Point(15, 125), // Coordinates (Bottom-left corner of the text string in the image)
-            FONT_HERSHEY_COMPLEX_SMALL, // Font
-            1.0, // Scale. 2.0 = 2x bigger
-            Scalar(255, 255, 255), // BGR Color
-            1, // Line Thickness (Optional)
-            LINE_AA); // Anti-alias (Optional, see version note)
+                    speed.push_back(-10.0);
 
-        putText(frame, 
-            "Gravity: " + to_string(accZ[i]*9.8),
-            Point(15, 145), // Coordinates (Bottom-left corner of the text string in the image)
-            FONT_HERSHEY_COMPLEX_SMALL, // Font
-            1.0, // Scale. 2.0 = 2x bigger
-            Scalar(255, 255, 255), // BGR Color
-            1, // Line Thickness (Optional)
-            LINE_AA); // Anti-alias (Optional, see version note)
+                    putText(frame, 
+                        "Speed: " + spd + " km/h",
+                        Point(15, 15), // Coordinates (Bottom-left corner of the text string in the image)
+                        FONT_HERSHEY_COMPLEX_SMALL, // Font
+                        1.0, // Scale. 2.0 = 2x bigger
+                        Scalar(255, 255, 255), // BGR Color
+                        1, // Line Thickness (Optional)
+                        LINE_AA); // Anti-alias (Optional, see version note)
+                }                
+            }
+            if (lineno == 2)
+            {
+                string alt = get_str_between_two_str(line, " ", "m");
+                try
+                {
+                    replace(alt.begin(), alt.end(), ',', '.');
+                    altitude.push_back(stof(alt));
+
+                    putText(frame, 
+                        "Altitude: " + alt + " meters",
+                        Point(15, 35), // Coordinates (Bottom-left corner of the text string in the image)
+                        FONT_HERSHEY_COMPLEX_SMALL, // Font
+                        1.0, // Scale. 2.0 = 2x bigger
+                        Scalar(255, 255, 255), // BGR Color
+                        1, // Line Thickness (Optional)
+                        LINE_AA); // Anti-alias (Optional, see version note)
+                }
+                catch(const std::exception& e)
+                {
+                    std::cerr << e.what() << '\n';
+                    std::cerr << to_string(i) << '\n';
+
+                    altitude.push_back(-10.0);
+
+                    putText(frame, 
+                        "Altitude: " + alt + " meters",
+                        Point(15, 35), // Coordinates (Bottom-left corner of the text string in the image)
+                        FONT_HERSHEY_COMPLEX_SMALL, // Font
+                        1.0, // Scale. 2.0 = 2x bigger
+                        Scalar(255, 255, 255), // BGR Color
+                        1, // Line Thickness (Optional)
+                        LINE_AA); // Anti-alias (Optional, see version note)
+                }  
+            }
+            if (lineno == 5)
+            {
+                vector<string> result = parse_comma_separated_string(line);
+                try
+                {
+                    float x = 9.8*stof(result[0]);
+                    float y = 9.8*stof(result[1]);
+                    float z = 9.8*stof(result[2]);
+
+                    accX.push_back(x);
+                    accY.push_back(y);
+                    accZ.push_back(z);
+                    
+                    float mag = sqrt((x*x) + (y*y) + (z*z));
+                    acc_magnitude.push_back(mag);
+
+                    putText(frame, 
+                        result[1],
+                        Point(15, 105), // Coordinates (Bottom-left corner of the text string in the image)
+                        FONT_HERSHEY_COMPLEX_SMALL, // Font
+                        1.0, // Scale. 2.0 = 2x bigger
+                        Scalar(255, 255, 255), // BGR Color
+                        1, // Line Thickness (Optional)
+                        LINE_AA); // Anti-alias (Optional, see version note)
+
+                    putText(frame, 
+                        result[0],
+                        Point(15, 125), // Coordinates (Bottom-left corner of the text string in the image)
+                        FONT_HERSHEY_COMPLEX_SMALL, // Font
+                        1.0, // Scale. 2.0 = 2x bigger
+                        Scalar(255, 255, 255), // BGR Color
+                        1, // Line Thickness (Optional)
+                        LINE_AA); // Anti-alias (Optional, see version note)
+
+                    putText(frame, 
+                        result[2],
+                        Point(15, 145), // Coordinates (Bottom-left corner of the text string in the image)
+                        FONT_HERSHEY_COMPLEX_SMALL, // Font
+                        1.0, // Scale. 2.0 = 2x bigger
+                        Scalar(255, 255, 255), // BGR Color
+                        1, // Line Thickness (Optional)
+                        LINE_AA); // Anti-alias (Optional, see version note)
+
+                    putText(frame, 
+                        to_string(mag),
+                        Point(15, 165), // Coordinates (Bottom-left corner of the text string in the image)
+                        FONT_HERSHEY_COMPLEX_SMALL, // Font
+                        1.0, // Scale. 2.0 = 2x bigger
+                        Scalar(255, 255, 255), // BGR Color
+                        1, // Line Thickness (Optional)
+                        LINE_AA); // Anti-alias (Optional, see version note)
+                }
+                catch(const std::exception& e)
+                {
+                    std::cerr << e.what() << '\n';
+                    std::cerr << to_string(i) << '\n';
+
+                    accX.push_back(-10.0);
+                    accY.push_back(-10.0);
+                    accZ.push_back(-10.0);
+                    acc_magnitude.push_back(-10.0);
+
+                    putText(frame, 
+                        "Y: error",
+                        Point(15, 105), // Coordinates (Bottom-left corner of the text string in the image)
+                        FONT_HERSHEY_COMPLEX_SMALL, // Font
+                        1.0, // Scale. 2.0 = 2x bigger
+                        Scalar(255, 255, 255), // BGR Color
+                        1, // Line Thickness (Optional)
+                        LINE_AA); // Anti-alias (Optional, see version note)
+
+                    putText(frame, 
+                        "X: error",
+                        Point(15, 125), // Coordinates (Bottom-left corner of the text string in the image)
+                        FONT_HERSHEY_COMPLEX_SMALL, // Font
+                        1.0, // Scale. 2.0 = 2x bigger
+                        Scalar(255, 255, 255), // BGR Color
+                        1, // Line Thickness (Optional)
+                        LINE_AA); // Anti-alias (Optional, see version note)
+
+                    putText(frame, 
+                        "Gravity: error",
+                        Point(15, 145), // Coordinates (Bottom-left corner of the text string in the image)
+                        FONT_HERSHEY_COMPLEX_SMALL, // Font
+                        1.0, // Scale. 2.0 = 2x bigger
+                        Scalar(255, 255, 255), // BGR Color
+                        1, // Line Thickness (Optional)
+                        LINE_AA); // Anti-alias (Optional, see version note)
+
+                    putText(frame, 
+                        "error",
+                        Point(15, 165), // Coordinates (Bottom-left corner of the text string in the image)
+                        FONT_HERSHEY_COMPLEX_SMALL, // Font
+                        1.0, // Scale. 2.0 = 2x bigger
+                        Scalar(255, 255, 255), // BGR Color
+                        1, // Line Thickness (Optional)
+                        LINE_AA); // Anti-alias (Optional, see version note)
+                }
+                
+            } 
+        }
+
+        // Close the file
+        File.close();
 
         // Display the resulting frame
-        imshow( "Frame", frame );
+        // imshow( "Frame", frame );
             
         // Write the frame into the file 'outcpp.avi'
         video.write(frame);
@@ -225,6 +372,37 @@ int main()
     // When everything done, release the video capture object and video writer object
     cap.release();
     video.release();
+
+    VideoCapture cap1("./outcpp.avi");
+
+    // Check if stream opened successfully
+    if(!cap1.isOpened())
+    {
+        cout << "Error opening video stream or file" << endl;
+        return -1;
+    }
+
+    while(1)
+    {
+        Mat frame;
+        // Capture frame-by-frame
+        cap1 >> frame;
+
+        // If the frame is empty, break immediately
+        if(frame.empty())
+            break;
+
+        // Display the resulting frame
+        imshow( "Frame", frame );
+        // sleep(1);
+
+        // Press  ESC on keyboard to exit
+        char c = (char)waitKey(25);
+        if(c == 27)
+            break;
+    }
+
+    cap1.release();
 
     // Closes all the frames
     destroyAllWindows();
