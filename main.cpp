@@ -39,7 +39,6 @@ string get_str_between_two_str(const string s,
             last_delim_pos - end_pos_of_first_delim);
 }
 
-
 int main() 
 {
     int numFrames;
@@ -161,7 +160,6 @@ int main()
         // If the frame is empty, break immediately
         if(frame.empty())
             break;
-
         
         string path = "../../20220127_IMU_data/alagut_pol/test_fn" + to_string(i) + ".pol";
         // Read from the text file
@@ -255,9 +253,9 @@ int main()
                 vector<string> result = parse_comma_separated_string(line);
                 try
                 {
-                    float x = 9.8*stof(result[0]);
-                    float y = 9.8*stof(result[1]);
-                    float z = 9.8*stof(result[2]);
+                    float x = stof(result[0]);
+                    float y = stof(result[1]);
+                    float z = stof(result[2]);
 
                     accX.push_back(x);
                     accY.push_back(y);
@@ -265,6 +263,10 @@ int main()
                     
                     float mag = sqrt((x*x) + (y*y) + (z*z));
                     acc_magnitude.push_back(mag);
+
+                    float axr = acos(x/mag);
+                    float ayr = acos(y/mag);
+                    float azr = acos(z/mag);
 
                     putText(frame, 
                         result[1],
@@ -294,7 +296,7 @@ int main()
                         LINE_AA); // Anti-alias (Optional, see version note)
 
                     putText(frame, 
-                        to_string(mag),
+                        to_string(axr) + "\n" + to_string(ayr) + "\n" + to_string(azr),
                         Point(15, 165), // Coordinates (Bottom-left corner of the text string in the image)
                         FONT_HERSHEY_COMPLEX_SMALL, // Font
                         1.0, // Scale. 2.0 = 2x bigger

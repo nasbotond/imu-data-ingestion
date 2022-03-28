@@ -88,5 +88,6 @@
         "stop_token": "cpp",
         "cfenv": "cpp",
         "cinttypes": "cpp"
-    }
+    },
+    "cmake.configureOnOpen": false
 }
