@@ -141,7 +141,7 @@ int main()
     int frame_height = cap.get(cv::CAP_PROP_FRAME_HEIGHT);
     
     // Define the codec and create VideoWriter object.The output is stored in 'outcpp.avi' file.
-    VideoWriter video("outcpp.avi", VideoWriter::fourcc('M', 'J', 'P', 'G'), 10, Size(frame_width, frame_height));
+    VideoWriter video("outcpp.avi", VideoWriter::fourcc('M', 'J', 'P', 'G'), 2, Size(frame_width, frame_height));
 
     // Check if stream opened successfully
     if(!cap.isOpened())
@@ -269,7 +269,7 @@ int main()
                     float azr = acos(z/mag);
 
                     putText(frame, 
-                        result[1],
+                        "AccY: " + result[1],
                         Point(15, 105), // Coordinates (Bottom-left corner of the text string in the image)
                         FONT_HERSHEY_COMPLEX_SMALL, // Font
                         1.0, // Scale. 2.0 = 2x bigger
@@ -278,7 +278,7 @@ int main()
                         LINE_AA); // Anti-alias (Optional, see version note)
 
                     putText(frame, 
-                        result[0],
+                        "AccX: " + result[0],
                         Point(15, 125), // Coordinates (Bottom-left corner of the text string in the image)
                         FONT_HERSHEY_COMPLEX_SMALL, // Font
                         1.0, // Scale. 2.0 = 2x bigger
@@ -287,7 +287,7 @@ int main()
                         LINE_AA); // Anti-alias (Optional, see version note)
 
                     putText(frame, 
-                        result[2],
+                        "AccZ: " + result[2],
                         Point(15, 145), // Coordinates (Bottom-left corner of the text string in the image)
                         FONT_HERSHEY_COMPLEX_SMALL, // Font
                         1.0, // Scale. 2.0 = 2x bigger
@@ -296,7 +296,8 @@ int main()
                         LINE_AA); // Anti-alias (Optional, see version note)
 
                     putText(frame, 
-                        to_string(axr) + "\n" + to_string(ayr) + "\n" + to_string(azr),
+                        // to_string(axr) + "\n" + to_string(ayr) + "\n" + to_string(azr),
+                        "Acc Magnitude: " + to_string(mag),
                         Point(15, 165), // Coordinates (Bottom-left corner of the text string in the image)
                         FONT_HERSHEY_COMPLEX_SMALL, // Font
                         1.0, // Scale. 2.0 = 2x bigger

@@ -78,15 +78,32 @@ int main()
 		cout<<"Could not open the file\n";
  
     // ID;Lat;Lon;Alt;Vel;Ax;Ay;Az;Mx;My;Mz
-    
-	for(int i=0; i<content.size(); i++)
+
+	// for(int i=0; i<content.size(); i++)
     // for(int i=0; i<10; i++)
+	// {
+	// 	for(int j=0; j<content[i].size(); j++)
+	// 	{
+	// 		cout<<content[i][j]<<" ";
+	// 	}
+	// 	cout<<"\n";
+	// }
+
+	vector<float> accX; // -999.99 for invalid
+    vector<float> accY; // -999.99 for invalid
+    vector<float> accZ; // -999.99 for invalid
+
+	for(int i=0; i<content.size(); i++)
 	{
-		for(int j=0;j<content[i].size();j++)
+		for(int j=0; j<content[i].size(); j++)
 		{
-			cout<<content[i][j]<<" ";
+			accX.push_back(stof(content[i][5]));
+			accY.push_back(stof(content[i][6]));
+			accZ.push_back(stof(content[i][7]));
+
+			// cout<<content[i][j]<<" ";
 		}
-		cout<<"\n";
+		// cout<<"\n";
 	}
  
 	return 0;
