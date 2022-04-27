@@ -13,5 +13,5 @@ find_package ( OpenCV REQUIRED )
 include_directories ( ${OpenCV_INCLUDE_DIRS} )
 
 # add_executable (program1 read_csv.cpp)
-add_executable (program1 main.cpp)
+add_executable (program1 ./src/read_csv.cpp)
 target_link_libraries (program1 ${OpenCV_LIBS})

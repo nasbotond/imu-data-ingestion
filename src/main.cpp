@@ -13,7 +13,7 @@
 using namespace std;
 using namespace cv;
 
-vector<string> parse_comma_separated_string(string input)
+vector<string> parseCommaSeparatedString(string input)
 {
     stringstream ss(input);
     vector<string> result;
@@ -27,7 +27,7 @@ vector<string> parse_comma_separated_string(string input)
     return result;
 }
 
-string get_str_between_two_str(const string s, const string start, const string stop)
+string getStringBetweenTwoStrings(const string s, const string start, const string stop)
 {
     unsigned first_delim_pos = s.find(start);
     unsigned end_pos_of_first_delim = first_delim_pos + start.length();
@@ -84,7 +84,7 @@ int main()
     //         }
     //         if (lineno == 1)
     //         {
-    //             string spd = get_str_between_two_str(line, " ", "k");
+    //             string spd = getStringBetweenTwoStrings(line, " ", "k");
     //             try
     //             {
     //                 replace(spd.begin(), spd.end(), ',', '.');
@@ -99,7 +99,7 @@ int main()
     //         }
     //         if (lineno == 2)
     //         {
-    //             string alt = get_str_between_two_str(line, " ", "m");
+    //             string alt = getStringBetweenTwoStrings(line, " ", "m");
     //             try
     //             {
     //                 replace(alt.begin(), alt.end(), ',', '.');
@@ -113,7 +113,7 @@ int main()
     //         }
     //         if (lineno == 5)
     //         {
-    //             vector<string> result = parse_comma_separated_string(line);
+    //             vector<string> result = parseCommaSeparatedString(line);
     //             try
     //             {
     //                 accX.push_back(stof(result[0]));
@@ -194,7 +194,7 @@ int main()
             }
             if (lineno == 1)
             {
-                string spd = get_str_between_two_str(line, " ", "k");
+                string spd = getStringBetweenTwoStrings(line, " ", "k");
                 try
                 {
                     replace(spd.begin(), spd.end(), ',', '.');
@@ -228,7 +228,7 @@ int main()
             }
             if (lineno == 2)
             {
-                string alt = get_str_between_two_str(line, " ", "m");
+                string alt = getStringBetweenTwoStrings(line, " ", "m");
                 try
                 {
                     replace(alt.begin(), alt.end(), ',', '.');
@@ -262,7 +262,7 @@ int main()
             }
             if (lineno == 5)
             {
-                vector<string> result = parse_comma_separated_string(line);
+                vector<string> result = parseCommaSeparatedString(line);
                 try
                 {
                     float x = stof(result[0]);
