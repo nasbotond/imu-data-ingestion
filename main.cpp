@@ -15,36 +15,47 @@ using namespace cv;
 
 vector<string> parse_comma_separated_string(string input)
 {
-    stringstream ss( input );
+    stringstream ss(input);
     vector<string> result;
 
-    while( ss.good() )
+    while(ss.good())
     {
         string substr;
-        getline( ss, substr, ',' );
-        result.push_back( substr );
+        getline(ss, substr, ',');
+        result.push_back(substr);
     }
     return result;
 }
 
-string get_str_between_two_str(const string s,
-        const string start,
-        const string stop)
+string get_str_between_two_str(const string s, const string start, const string stop)
 {
     unsigned first_delim_pos = s.find(start);
     unsigned end_pos_of_first_delim = first_delim_pos + start.length();
     unsigned last_delim_pos = s.find_first_of(stop, end_pos_of_first_delim);
     
-    return s.substr(end_pos_of_first_delim,
-            last_delim_pos - end_pos_of_first_delim);
+    return s.substr(end_pos_of_first_delim, last_delim_pos - end_pos_of_first_delim);
+}
+
+void drawLine(Mat img, Point start, Point end)
+{
+    int thickness = 5;
+    int lineType = LINE_8;
+    line(img,
+        start,
+        end,
+        Scalar(255, 255, 255),
+        thickness,
+        lineType);
 }
 
 int main() 
 {
     int numFrames;
-    VideoCapture cap("../../20220127_IMU_data/Alagut_3cam_4FPS_GPS_IMU_preview.mp4");
+    // VideoCapture cap("../../20220127_IMU_data/Alagut_3cam_4FPS_GPS_IMU_preview.mp4");
+    // VideoCapture cap("../../20220405_IMU_data/Budafoki_ut_preview.mp4");
+    VideoCapture cap("../../20220322_IMU_data/ELTEkor_20220322_preview.mp4");
     numFrames = cap.get(CAP_PROP_FRAME_COUNT);
-
+    cout << numFrames << endl;
     // system("pause");
     // cap.release();
 
@@ -141,7 +152,7 @@ int main()
     int frame_height = cap.get(cv::CAP_PROP_FRAME_HEIGHT);
     
     // Define the codec and create VideoWriter object.The output is stored in 'outcpp.avi' file.
-    VideoWriter video("outcpp.avi", VideoWriter::fourcc('M', 'J', 'P', 'G'), 2, Size(frame_width, frame_height));
+    VideoWriter video("eltekor.avi", VideoWriter::fourcc('M', 'J', 'P', 'G'), 2, Size(frame_width, frame_height));
 
     // Check if stream opened successfully
     if(!cap.isOpened())
@@ -161,7 +172,8 @@ int main()
         if(frame.empty())
             break;
         
-        string path = "../../20220127_IMU_data/alagut_pol/test_fn" + to_string(i) + ".pol";
+        // string path = "../../20220127_IMU_data/alagut_pol/test_fn" + to_string(i) + ".pol";
+        string path = "../../20220322_IMU_data/ELTEkor_polars/test_fn" + to_string(i) + ".pol";
         // Read from the text file
         ifstream File(path);
 
@@ -350,16 +362,19 @@ int main()
                         Scalar(255, 255, 255), // BGR Color
                         1, // Line Thickness (Optional)
                         LINE_AA); // Anti-alias (Optional, see version note)
-                }
-                
+                }                
             } 
         }
 
         // Close the file
         File.close();
 
-        // Display the resulting frame
-        // imshow( "Frame", frame );
+        // DRAW AXES in upper right corner of the frame
+        Point p1(1510, 350), p2(1810, 350);
+        Point p3(1660, 200), p4(1660, 500);
+        
+        drawLine(frame, p1, p2);
+        drawLine(frame, p3, p4);
             
         // Write the frame into the file 'outcpp.avi'
         video.write(frame);
@@ -367,8 +382,9 @@ int main()
         // Press  ESC on keyboard to exit
         char c = (char)waitKey(25);
         if(c == 27)
+        {
             break;
-
+        }
         i++;
     }
 
@@ -376,7 +392,7 @@ int main()
     cap.release();
     video.release();
 
-    VideoCapture cap1("./outcpp.avi");
+    VideoCapture cap1("./eltekor.avi");
 
     // Check if stream opened successfully
     if(!cap1.isOpened())
@@ -396,20 +412,20 @@ int main()
             break;
 
         // Display the resulting frame
-        imshow( "Frame", frame );
+        imshow("Frame", frame);
         // sleep(1);
 
         // Press  ESC on keyboard to exit
         char c = (char)waitKey(25);
         if(c == 27)
+        {
             break;
+        }
     }
 
     cap1.release();
-
     // Closes all the frames
     destroyAllWindows();
-
     return 0;
 }
 
