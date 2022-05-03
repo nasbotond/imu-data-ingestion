@@ -36,14 +36,14 @@ vector<string> split(const string &s, char delim)
     return result;
 }
 
-void drawLine(Mat img, Point start, Point end)
+void drawLine(Mat img, Point start, Point end, Scalar color)
 {
     int thickness = 5;
     int lineType = LINE_8;
     line(img,
         start,
         end,
-        Scalar(255, 255, 255),
+        color,
         thickness,
         lineType);
 }
@@ -103,8 +103,7 @@ int main()
 			}
 			catch(const std::exception& e)
 			{
-				std::cerr << e.what() << '\n';
-				std::cerr << to_string(i) << '\n';
+				std::cerr << "Exception: " << e.what() << " on line " + to_string(i) << '\n';
 			}			
 
 			if(rowIndex == (content.size()-1))
@@ -135,7 +134,7 @@ int main()
 	int numFrames;
     VideoCapture cap("../../20220322_IMU_data/ELTEkor_20220322_preview.mp4");
     numFrames = cap.get(CAP_PROP_FRAME_COUNT);
-    cout << numFrames << endl;
+    cout << "Number of frames: " + to_string(numFrames) << endl;
     // system("pause");
     // cap.release();
 
@@ -160,7 +159,7 @@ int main()
         // Capture frame-by-frame
         cap >> frame;
 
-        // If the frame is empty, break immediately
+        // If the frame is empty, break immediacdtely
         if(frame.empty())
 		{
 			break;
@@ -204,11 +203,17 @@ int main()
 		// 	LINE_AA); // Anti-alias (Optional, see version note)
 
         // DRAW AXES in upper right corner of the frame
+		// origin at x: 1660, y: 350
         Point p1(1510, 350), p2(1810, 350);
         Point p3(1660, 200), p4(1660, 500);
         
-        drawLine(frame, p1, p2);
-        drawLine(frame, p3, p4);
+        drawLine(frame, p1, p2, Scalar(255, 255, 255));
+        drawLine(frame, p3, p4, Scalar(255, 255, 255));
+
+		Point origin(1660, 350);
+		Point accPoint(1660-(1000.0*accY[i]), 350-(1000.0*accX[i]));
+
+		drawLine(frame, origin, accPoint, Scalar(0, 255, 0));
             
         // Write the frame into the file 'outcpp.avi'
         video.write(frame);
@@ -244,7 +249,9 @@ int main()
 
         // If the frame is empty, break immediately
         if(frame.empty())
-            break;
+		{
+			break;
+		}            
 
         // Display the resulting frame
         imshow("Frame", frame);
