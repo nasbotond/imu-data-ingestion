@@ -73,6 +73,27 @@ void CsvReader::processData()
 			accZ.push_back(sumZ/count);
 		}
 	}
+
+    // Calculate mean acceleration for all directions
+    float meanX = getAverage(accX);
+    float meanY = getAverage(accY);
+    float meanZ = getAverage(accZ);
+
+    // Subtract the mean acceleration from each element in acceleration vector
+    for(auto& it : accX) 
+    {
+        it -= meanX;
+    }
+
+    for(auto& it : accY) 
+    {
+        it -= meanY;
+    }
+
+    for(auto& it : accZ) 
+    {
+        it -= meanZ;
+    }
 }
 
 void CsvReader::writeToVideo(const std::string &fileName) 
@@ -91,7 +112,7 @@ void CsvReader::writeToVideo(const std::string &fileName)
 
     if(!cap.isOpened()) 
     {
-        throw std::runtime_error("error: failed to open video stream");
+        throw std::runtime_error("Error: failed to open video stream");
     }
 
     int i = 0;
@@ -102,7 +123,7 @@ void CsvReader::writeToVideo(const std::string &fileName)
         if(frame.empty()) break;
 
         cv::putText(frame, 
-			"AccY: " + std::to_string(accY[i]),
+			"AccX: " + std::to_string(accX[i]),
 			cv::Point(15, 105), // Coordinates (Bottom-left corner of the text string in the image)
 			cv::FONT_HERSHEY_COMPLEX_SMALL, // Font
 			1.0, // Scale
@@ -111,7 +132,7 @@ void CsvReader::writeToVideo(const std::string &fileName)
 			cv::LINE_AA); // Anti-alias
 
 		cv::putText(frame, 
-			"AccX: " + std::to_string(accX[i]),
+			"AccY: " + std::to_string(accY[i]),
 			cv::Point(15, 125), // Coordinates (Bottom-left corner of the text string in the image)
 			cv::FONT_HERSHEY_COMPLEX_SMALL, // Font
 			1.0, // Scale
@@ -155,6 +176,16 @@ void CsvReader::writeToVideo(const std::string &fileName)
     video.release();
 }
 
+float CsvReader::getAverage(const std::vector<float> &v)
+{
+    if (v.empty()) 
+    {
+        return 0;
+    }
+ 
+    return std::reduce(v.begin(), v.end(), 0.0) / v.size();
+}
+
 void CsvReader::drawLine(cv::Mat &img, const cv::Point &start, const cv::Point &end, const cv::Scalar color) const 
 {
     int thickness = 5;
@@ -190,7 +221,7 @@ void CsvReader::showFrames() const
     // Check if stream opened successfully
     if(!cap.isOpened()) 
     {
-        throw std::runtime_error("Error: failed to open video stream in function showframes()");
+        throw std::runtime_error("Error: failed to open video stream in function showFrames()");
     }
 
     while(true) 

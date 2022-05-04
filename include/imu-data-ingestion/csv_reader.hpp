@@ -10,8 +10,9 @@
 #include <fstream>
 #include <cstdlib>
 #include <string>
-#include <vector>
 #include <sstream>
+#include <numeric>
+#include <vector>
 
 class CsvReader
 {
@@ -37,6 +38,7 @@ class CsvReader
 
         // Helper functions
         std::vector<std::string> split(const std::string &s, char delim) const;
+        float getAverage(const std::vector<float> &v);
         void drawLine(cv::Mat &img, const cv::Point &start, const cv::Point &end, const cv::Scalar color) const;
         void showFrames() const;
 
