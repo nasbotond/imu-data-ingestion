@@ -18,8 +18,8 @@ class CsvReader
 {
     private:
 
-        std::string fileName;
-        inline static const std::string newVideoName = "eltekor.avi";
+        std::string fileName; // csv file containing the data we want to work with (IMU data)
+        inline static const std::string newVideoName = "../eltekor.avi"; // output video name and path
         std::vector<std::vector<std::string>> content;
 
         std::vector<float> accX;
@@ -41,5 +41,4 @@ class CsvReader
         float getAverage(const std::vector<float> &v);
         void drawLine(cv::Mat &img, const cv::Point &start, const cv::Point &end, const cv::Scalar color) const;
         void showFrames() const;
-
 };

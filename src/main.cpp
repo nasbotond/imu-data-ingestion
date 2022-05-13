@@ -7,8 +7,8 @@
 
 int main() 
 {
-    // Test input
-    std::string testFile = "../../20220322_IMU_data/ELTEkor_20220322.csv";
+    // Input
+    std::string testFile = "../input_data/ELTEkor_20220322.csv";
     CsvReader reader = CsvReader(testFile);
 
     try 
@@ -18,7 +18,7 @@ int main()
         reader.processData();
 
         // Write to new video
-        std::string videoInput = "../../20220322_IMU_data/ELTEkor_20220322_preview.mp4";
+        std::string videoInput = "../input_data/ELTEkor_20220322_preview.mp4";
         reader.writeToVideo(videoInput);
 
         // Display frames
